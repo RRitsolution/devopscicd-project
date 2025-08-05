@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        jdk 'JDK17'
+        maven 'Maven3.8.7'
+    }
+
     environment {
         DEPLOY_BASE = './env'
     }
@@ -10,21 +15,20 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo 'Code already checked out by Jenkins.'
-                // If not pre-checked out, add: checkout scm
             }
         }
 
         stage('Build') {
             steps {
                 echo 'Building the Maven project...'
-                sh '/usr/bin/mvn clean compile'
+                sh 'mvn clean compile'
             }
         }
 
         stage('Unit Test') {
             steps {
                 echo 'Running unit tests...'
-                sh '/usr/bin/mvn test'
+                sh 'mvn test'
             }
         }
 
@@ -34,7 +38,7 @@ pipeline {
                 sh '''
                     mkdir -p $DEPLOY_BASE/dev
                     cp -v target/**/*.class $DEPLOY_BASE/dev/
-                    cp -v config.yaml $DEPLOY_BASE/dev/
+                    cp -v $DEPLOY_BASE/dev/config.yaml $DEPLOY_BASE/dev/
                 '''
             }
         }
@@ -46,7 +50,7 @@ pipeline {
                 sh '''
                     mkdir -p $DEPLOY_BASE/test
                     cp -v target/**/*.class $DEPLOY_BASE/test/
-                    cp -v config.yaml $DEPLOY_BASE/test/
+                    cp -v $DEPLOY_BASE/test/config.yaml $DEPLOY_BASE/test/
                 '''
             }
         }
@@ -58,7 +62,7 @@ pipeline {
                 sh '''
                     mkdir -p $DEPLOY_BASE/staging
                     cp -v target/**/*.class $DEPLOY_BASE/staging/
-                    cp -v config.yaml $DEPLOY_BASE/staging/
+                    cp -v $DEPLOY_BASE/staging/config.yaml $DEPLOY_BASE/staging/
                 '''
             }
         }
@@ -70,7 +74,7 @@ pipeline {
                 sh '''
                     mkdir -p $DEPLOY_BASE/prod
                     cp -v target/**/*.class $DEPLOY_BASE/prod/
-                    cp -v config.yaml $DEPLOY_BASE/prod/
+                    cp -v $DEPLOY_BASE/prod/config.yaml $DEPLOY_BASE/prod/
                 '''
             }
         }
